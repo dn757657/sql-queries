@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-setup(name='sql_queries',
+setup(name='sql_docopt_queries',
       version='0.0.2',
       packages=['sql_queries'],
       license='MIT',
