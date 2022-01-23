@@ -1,26 +1,18 @@
 from distutils.core import setup
 
 setup(name='sql_queries',
-      version='0.0.1',
+      version='0.0.2',
       packages=['sql_queries'],
       license='MIT',
       description='sqlite interface',
       author='Dan',
       author_email='daniel.js.campbell@gmail.com',
-      url = 'https://github.com/dn757657/sql-queries.git',
-      download_url = 'https://github.com/dn757657/ct_data/archive/refs/tags/0.1.1.tar.gz',
-      keywords = ['docopt', 'sqlite', 'ct-finance'],
+      url='https://github.com/dn757657/sql-queries.git',
+      download_url='https://github.com/dn757657/sql-queries/archive/refs/tags/0.0.2.tar.gz',
+      keywords=['docopt', 'sqlite', 'ct-finance'],
       install_requires=[
-            'pandas',
-            'tabulate',
-            'web3',
-            'python-dateutil',
-            'textblob',
-            'colorama',
-            'docopt',
-            'qtrade',
-            'pandas_datareader',
-            'textblob',
+            'pathlib~=1.0.1',
+            'pandas~=1.3.5',
       ],
       classifiers=[
             'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package

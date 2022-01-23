@@ -16,6 +16,8 @@ os.makedirs(fipy_fp.joinpath('db'), exist_ok=True)
 
 class DB:
     """    Object for interacting with the finance database object
+    args:
+
 
     Attributes:
     filename:   name of the database file including filepath - hardcoded
