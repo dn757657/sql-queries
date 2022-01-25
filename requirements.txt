@@ -1,7 +1,2 @@
-sqlite3,
-pathlib,
-pandas,
-copy,
-os,
-datetime,
-tabulate,
+pathlib~=1.0.1
+pandas~=1.3.5

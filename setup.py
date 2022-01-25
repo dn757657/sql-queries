@@ -11,13 +11,8 @@ setup(name='sql_docopt_queries',
       download_url='https://github.com/dn757657/sql-queries/archive/refs/tags/0.0.3.tar.gz',
       keywords=['docopt', 'sqlite', 'ct-finance'],
       install_requires=[
-            'sqlite3',
-            'pathlib',
-            'pandas',
-            'copy',
-            'os',
-            'datetime',
-            'tabulate',
+            'pathlib~=1.0.1',
+            'pandas~=1.3.5'
       ],
       classifiers=[
             'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
