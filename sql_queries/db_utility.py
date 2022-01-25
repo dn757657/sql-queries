@@ -4,8 +4,10 @@ import pandas as pd
 import copy
 import os
 import datetime
+import tabulate
 
 DATE_FORMAT = '%Y-%m-%d'
+CONSOLE_OUT = True
 
 fipy_fp = pathlib.Path(__file__).absolute().parent
 os.makedirs(fipy_fp.joinpath('db'), exist_ok=True)
@@ -74,6 +76,39 @@ class DB:
 
         self.conn.cursor().close()
         return schema
+
+    def get_view(self, query, data=None):
+        """ get tabulated text view of data per passed query """
+
+        # accommodate passing only string queries and table in the future?
+        header = self.get_header(query=query)
+
+        if not data:
+            data = pd.read_sql(query.build_select(), self.conn)
+
+        tabulated = tabulate.tabulate(data, headers=header)
+        return tabulated
+
+    def get_header(self, query):
+        """ gets proper header for data if tabulated given columns as string
+
+        args:
+            db:             db object from finance_db
+            table:          string table name to query
+            columns:        select columns as list of strings toi be filtered in query
+        """
+
+        header = []
+        columns = query.s_cols
+        if not columns or '*' in columns:
+            header = self.schema[query.table]
+        else:
+            for column in columns:
+                if column in self.schema[query.table]:
+                    header.append(column)
+
+        return header
+
 
     def _queryize_columns(self, columns_list):
         """create string compatible with injection in sql query from list of strings"""
@@ -448,7 +483,7 @@ class Query:
 
         return links
 
-    def build_select(self, build_op='string', function=None):
+    def build_select(self, build_op='string', console_view=CONSOLE_OUT, function=None):
         # SELECT s_cols FROM table WHERE ORDER LIMIT
         # SELECT function(s_cols) FROM table WHERE ORDER LIMIT
 
@@ -482,32 +517,36 @@ class Query:
         if self.limit:
             query = query + self.limit_str
 
-        print(query)
+        if console_view:
+            print(query)
+
         if build_op == 'string':
             return query
         elif build_op == 'dict':
             data = self._query_dict(db=self.db, query=query, table=self.table)
             return data
 
-    def build_insert(self, method='FAIL',):
+    def build_insert(self, method='FAIL', console_view=CONSOLE_OUT):
         # INSERT OR method INTO table (columns,) VALUES (values,)
         query = 'INSERT OR ' + method + ' INTO ' + self.table + \
                 ' (' + self.in_cols_str + ') ' + 'VALUES ' + '(' + self.in_values_str + ')'
 
-        print(query)
+        if console_view:
+            print(query)
         return query
 
-    def build_update(self, method='FAIL'):
+    def build_update(self, method='FAIL', console_view=CONSOLE_OUT):
         # INSERT OR method INTO table (columns,) VALUES (values,)
         query = 'UPDATE OR ' + method + ' ' + self.table + ' SET ' + self.update_str + ' '
 
         if self.wheres:
             query = query + self.where_str
 
-        print(query)
+        if console_view:
+            print(query)
         return query
 
-    def build_delete(self):
+    def build_delete(self, console_view=CONSOLE_OUT):
         # TODO DROP TABLE
         # DELETE s_cols FROM table WHERE ORDER LIMIT
 
@@ -517,5 +556,52 @@ class Query:
         if self.wheres:
             query = query + self.where_str
 
-        print(query)
+        if console_view:
+            print(query)
         return query
+
+    def add_entry(self, console_view=CONSOLE_OUT, drop_cond=None, drop_method=None, comp_columns=None, drop_id_col=None):
+        self.db.conn.cursor().execute(self.build_insert())
+
+        if drop_cond and drop_method:
+            # delete duplicates and keep minimum id value (original entry)
+            self.db.drop_duplicates(table=self.table, condition=drop_cond, method=drop_method,
+                                    filter_columns=comp_columns,
+                                    id_col=drop_id_col)
+            self.db.conn.commit()
+
+        if console_view:
+            view = self.db.get_view(query=self)
+            print(view)
+
+        return
+
+    def update_entry(self, query, console_view=CONSOLE_OUT):
+        """ edit selection in query using provided up_vals and diplay change to user"""
+
+        # copy query object but erase select columns to get all data for display
+        query_all = copy.deepcopy(query)
+        query_all.select_str = '*'
+
+        # get pre-update data
+        original_data = self.db.conn.cursor().execute(query_all.build_select()).fetchall()
+
+        # update the data
+        self.db.conn.cursor().execute(query.build_update())
+        self.db.conn.commit()
+
+        # get updated data
+        updated_data = self.db.conn.cursor().execute(query_all.build_select()).fetchall()
+
+        if console_view:
+            # display change to user
+            print('Pre-Update:')
+            # print(tabulate.tabulate(original_data, headers=header))
+            # show_tabulated_sql(db, query_all, data=original_data)
+            view = self.db.get_view(query=self, data=original_data)
+            print(view.tabulated)
+            print("Post Update:")
+            # print(tabulate.tabulate(updated_data, headers=header))
+            # show_tabulated_sql(db, query, data=updated_data)
+            view = self.db.get_view(query=self, data=updated_data)
+            print(view.tabulated)
