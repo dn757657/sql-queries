@@ -30,12 +30,12 @@ class DB:
 
     """
 
-    def __init__(self, filename='ct_data.db', structure=None):
+    def __init__(self, filename='ct_data.db', filepath=fipy_fp.joinpath("db"), structure=None):
         """ create database object and populate schema data"""
         # connect to db when initialized and establish cursor for later use
 
         self.filename = filename
-        self.filepath = fipy_fp.joinpath("db")
+        self.filepath = filepath
         # check if file exists, if not create structure
         # note that calling connect will create the file, therefore connection is instead made inside logic
         if not os.path.isfile(self.filepath):
