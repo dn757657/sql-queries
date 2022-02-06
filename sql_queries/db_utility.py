@@ -433,7 +433,7 @@ class Query:
         else:
             if self.wheres[0]['cond'] == 'LIKE':
                 self.wheres[0]['val'] = "'" + self.wheres[0]['val'] + "'"
-            where_str = where_str + self.wheres[0]['col'] + ' ' + self.wheres[0]['cond'] + ' ' + self.wheres[0]['val']
+            where_str = where_str + self.wheres[0]['col'] + ' ' + self.wheres[0]['cond'] + ' ' + self.wheres[0]['val'] + " "
 
         return where_str
 

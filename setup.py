@@ -1,14 +1,14 @@
 from distutils.core import setup
 
 setup(name='sql_docopt_queries',
-      version='0.0.5',
+      version='0.0.6',
       packages=['sql_queries'],
       license='MIT',
       description='sqlite interface',
       author='Dan',
       author_email='daniel.js.campbell@gmail.com',
       url='https://github.com/dn757657/sql-queries.git',
-      download_url='https://github.com/dn757657/sql-queries/archive/refs/tags/0.0.5.tar.gz',
+      download_url='https://github.com/dn757657/sql-queries/archive/refs/tags/0.0.6.tar.gz',
       keywords=['docopt', 'sqlite', 'ct-finance'],
       install_requires=[
             'pathlib~=1.0.1',
